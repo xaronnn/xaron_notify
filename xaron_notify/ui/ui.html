@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>XARON Notify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/css">
+        @import url('https://fonts.googleapis.com/css2?family=Advent+Pro&family=Barlow+Condensed:wght@200&family=Rajdhani:wght@500;600;700&display=swap');
+        .xr_title_shadow {
+            text-shadow: 0 0 2px #fff, 0 0 2px #350066;
+        }
+        .xr_desc_shadow {
+            text-shadow: 0 0 25px #fff, 0 0 50px #000000, 0 0 50px #000000, 0 0 50px #000000, 0 0 50px #000000;
+        }
+        .barlow {
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+        .rajdhani {
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .advent {
+            font-family: 'Advent Pro', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="absolute bottom-[5%] left-1/2 -translate-x-1/2 -translate-y-1/2 transform select-none hidden xaron_notify">
+        <div class="flex flex-col items-center gap-y-8">
+          <div class="xr_title_shadow text-6xl text-pink-700 shadow-black rajdhani font-bold xr_title">NOTIFICATION</div>
+          <div class="h-3 w-96 rounded-lg bg-gray-400 opacity-80">
+            <div class="h-[11px] w-[0px] rounded-lg bg-gray-200 xr_progress"></div>
+          </div>
+          <div class="advent text-xl font-extralight xr_desc_shadow text-gray-100 max-w-[512px] xr_desc">Just another notification plugin.</div>
+        </div>
+    </div>
+    <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(() => {
+            let isActive = false
+            const log = (text) => console.log(text);
+            let percent = 0
+            const loadBar = (cooldown, identifier) => {
+                isActive = identifier
+                const progress_bar = document.querySelector('.xr_progress')
+                const interval = setInterval(() => {
+                    percent += 1
+                    progress_bar.style.width = percent + '%'
+                    if (percent > 100) {
+                        clearInterval(interval)
+                        $(".xaron_notify").fadeOut(500)
+                        let remInterval = setTimeout(() => {
+                            $(".xr_progress").css("width", "1%")
+                            $(".xr_title").html("NOTIFICATION")
+                            $(".xr_desc").html("Just another notification plugin.")
+                            clearInterval(remInterval)
+                            isActive = false
+                            percent = 0
+                        }, 1000)
+                    }
+                }, (cooldown * 1000)/100);
+            }
+            const resetBar = () => {
+                percent = 0
+                const progress_bar = document.querySelector('.xr_progress')
+                $(".xr_progress").css("width", "1%")
+            }
+            window.addEventListener("message", (e) => {
+                switch(e.data.type) {
+                    case "show":
+                        if(!isActive) {
+                            $(".xaron_notify").fadeIn(500)
+                            $(".xr_title").html(e.data.title)
+                            $(".xr_desc").html(e.data.text)
+                            let load = loadBar(e.data.cooldown/1000, e.data.identifier)
+                        } else {
+                            if(isActive == e.data.identifier) {
+                                resetBar()
+                            }
+                        }
+                        break;
+                }
+            })
+            log("xaron_notify: ui loaded")
+        })
+    </script>
+</body>
+</html>
