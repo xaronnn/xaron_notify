@@ -1,6 +1,8 @@
 # XARON Notify
 Just another notification plugin for FiveM.
 
+For more scripts and development, [click here to join my Discord server](https://discord.gg/zjTVJCR7pm)!
+
 
 
 <h1>Documentation</h1>
